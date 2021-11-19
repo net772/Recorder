@@ -18,21 +18,17 @@ object PermissionUtil {
         mPermissionConstant = permissionConstant
 
         val permissions = permissionConstant.getPermissions()
-        Log.d("동현","easyPermission")
         // 한번이라도 거부했으면, 먼저 다이어로그로 띄우고 묻는다.
         if(shouldShowRequestPermissionRationale(activity, permissions)) {
-            Log.d("동현","shouldShowRequestPermissionRationale")
             if(isShowDialog) {
                 // 다이얼로그 띄우는 처리
             } else{
                 ActivityCompat.requestPermissions(activity, permissions, 1000)
             }
         } else {
-            Log.d("동현","else")
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || checkPermission(activity, permissions))
                     onPermissionGranted()
                 else {
-                    Log.d("동현","권한요청")
                     ActivityCompat.requestPermissions(activity, permissions, 1000) //요청권한을 배열로 담아서 권한 요청
                 }
             }

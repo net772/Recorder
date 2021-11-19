@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import com.example.recorder.R
@@ -28,6 +29,8 @@ class SoundVisualizerView(context: Context, attrs: AttributeSet? = null) : View(
 
     private val visualizeRepeatAction: Runnable = object : Runnable {
         override fun run() {
+            Log.d("동현","runrunrunrunrunrunrunrunrunrunrunrunrunrunrunrunrun")
+
             // Amplitude, Draw
             val currentAmplitude = onRequestCurrentAmplitude?.invoke() ?: 0
             drawingAmplitudes = listOf(currentAmplitude) + drawingAmplitudes
@@ -71,6 +74,7 @@ class SoundVisualizerView(context: Context, attrs: AttributeSet? = null) : View(
     }
 
     fun stopVisualizing() {
+        Log.d("동현","스탑")
         handler?.removeCallbacks(visualizeRepeatAction)
     }
 

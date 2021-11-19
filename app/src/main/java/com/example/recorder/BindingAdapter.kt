@@ -24,8 +24,26 @@ object BindingAdapter {
     @BindingAdapter("setAmplitude")
     @JvmStatic
     fun SoundVisualizerView.setAmplitude(recoder : MediaRecorder?) {
-        onRequestCurrentAmplitude = {
-            recoder?.maxAmplitude ?: 0
+    Log.d("동현","onRequestCurrentAmplitude111111 : $onRequestCurrentAmplitude")
+     //   if(onRequestCurrentAmplitude != null) {
+        //onRequestCurrentAmplitude?.let {
+            onRequestCurrentAmplitude = {
+                Log.d("동현","onRequestCurrentAmplitude22222")
+                recoder?.maxAmplitude ?: 0
+            }
+       // }
+    }
+
+    @BindingAdapter("showVisible")
+    @JvmStatic
+    fun SoundVisualizerView.showVisible(state: Boolean) {
+        Log.d("동현","state : $state")
+
+        if(state) startVisualizing() else {
+
+            Log.d("동현","stopVisualizing()전")
+            stopVisualizing()
         }
+
     }
 }

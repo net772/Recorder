@@ -9,6 +9,7 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
 import com.example.recorder.Permission.PermissionConstant
 import com.example.recorder.Permission.PermissionListener
+import kotlinx.coroutines.*
 
 class MainViewModel : ViewModel() {
     companion object {
@@ -20,8 +21,10 @@ class MainViewModel : ViewModel() {
     private lateinit var mPermissionCk: PermissionCheck
     val state = ObservableField<State>(State.BEFORE_RECORDING)
     val enable = ObservableField<Boolean>(false)
+    val show = ObservableField<Boolean>(false)
 
-    private var recorder: MediaRecorder? = null
+    val recorder = ObservableField<MediaRecorder?>()
+
     private var player: MediaPlayer? = null
     private lateinit var recordingFilePath: String
 
@@ -88,25 +91,27 @@ class MainViewModel : ViewModel() {
     }
 
     private fun startRecording() {
-        recorder = MediaRecorder().apply {
+        recorder.set(MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
             setOutputFile(recordingFilePath)
             prepare()
-        }
+        })
 
-        recorder?.start()
+        recorder.get()?.start()
+        show.set(true)
         state.set(State.ON_RECORDING)
     }
 
     private fun stopRecording() {
-        recorder?.run {
-            stop()
-            release()
-        }
-        recorder = null
+        recorder.get()?.stop()
+
+        show.set(false)
+        recorder.set(null)
         state.set(State.AFTER_RECORDING)
+
+        recorder.get()?.release()
     }
 
     private fun startPlaying() {
