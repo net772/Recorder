@@ -1,4 +1,4 @@
-package com.example.recorder.Permission
+package com.example.recorder.permission
 
 interface PermissionListener {
     fun onPermissionGranted()

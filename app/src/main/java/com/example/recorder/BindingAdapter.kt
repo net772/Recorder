@@ -4,7 +4,7 @@ import android.media.MediaRecorder
 import android.util.Log
 import android.view.View
 import androidx.databinding.BindingAdapter
-import com.example.recorder.customView.SoundVisualizerView
+import com.example.recorder.customview.SoundVisualizerView
 
 object BindingAdapter {
 
@@ -17,33 +17,42 @@ object BindingAdapter {
     @BindingAdapter("setDrawable")
     @JvmStatic
     fun RecordButton.setDrawable(state: State) {
-        Log.d("동현","state:$state")
         updateIconWithState(state)
     }
 
     @BindingAdapter("setAmplitude")
     @JvmStatic
     fun SoundVisualizerView.setAmplitude(recoder : MediaRecorder?) {
-    Log.d("동현","onRequestCurrentAmplitude111111 : $onRequestCurrentAmplitude")
-     //   if(onRequestCurrentAmplitude != null) {
-        //onRequestCurrentAmplitude?.let {
             onRequestCurrentAmplitude = {
-                Log.d("동현","onRequestCurrentAmplitude22222")
                 recoder?.maxAmplitude ?: 0
             }
-       // }
     }
 
-    @BindingAdapter("showVisible")
+    @BindingAdapter(value = ["showVisible", "replayCk"], requireAll = false)
     @JvmStatic
-    fun SoundVisualizerView.showVisible(state: Boolean) {
-        Log.d("동현","state : $state")
-
-        if(state) startVisualizing() else {
-
-            Log.d("동현","stopVisualizing()전")
+    fun SoundVisualizerView.showVisible(state: Boolean, replayState: Boolean) {
+        if(state) startVisualizing(replayState) else {
             stopVisualizing()
         }
-
     }
+
+    @BindingAdapter("resetView")
+    @JvmStatic
+    fun SoundVisualizerView.resetView(resetState: Boolean) {
+        if(resetState) clearVisualization()
+    }
+
+    @BindingAdapter("resetCount")
+    @JvmStatic
+    fun CountUpView.resetCount(resetState: Boolean) {
+        if(resetState) clearCountTime()
+    }
+
+
+    @BindingAdapter("countUp")
+    @JvmStatic
+    fun CountUpView.countUp(countState: Boolean) {
+        if(countState) startCountUp() else stopCountUp()
+    }
+
 }

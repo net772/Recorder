@@ -3,6 +3,7 @@
     <string name="setting">설정</string>
     <string name="permission_storage_title">권한이 필요합니다.</string>
     <string name="permission_storage_msg">전자액자에 앱에서 사진을 불러오기 위해 권한이 필요합니다.</string>
+    <string name="permission_storage_radio">오디오 앱 실행을 위한 권한이 필요합니다.</string>
     <string name="common_confirm">확인</string>
     <string name="common_cancel">취소</string>
 </resources>

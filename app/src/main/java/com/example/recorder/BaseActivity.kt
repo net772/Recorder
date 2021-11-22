@@ -1,18 +1,17 @@
 package com.example.recorder
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.example.recorder.Permission.PermissionConstant
-import com.example.recorder.Permission.PermissionListener
-import com.example.recorder.Permission.PermissionUtil
+import com.example.recorder.permission.PermissionConstant
+import com.example.recorder.permission.PermissionListener
+import com.example.recorder.permission.PermissionUtil
 
 abstract class BaseActivity<DB: ViewDataBinding> : AppCompatActivity(), BaseNavigator  {
     lateinit var mBinding: DB
-    abstract fun getLayoutResourceId(): Int
 
+    abstract fun getLayoutResourceId(): Int
     abstract fun initDataBinding()
     abstract fun initView()
 
@@ -28,6 +27,4 @@ abstract class BaseActivity<DB: ViewDataBinding> : AppCompatActivity(), BaseNavi
     override fun requestPermission(permissionConstant: PermissionConstant, permissionListener: PermissionListener?) {
         PermissionUtil.easyPermission(this, permissionConstant, permissionListener)
     }
-
-
 }

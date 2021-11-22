@@ -1,4 +1,4 @@
-package com.example.recorder.customView
+package com.example.recorder.customview
 
 import android.content.Context
 import android.graphics.Canvas
@@ -25,15 +25,17 @@ class SoundVisualizerView(context: Context, attrs: AttributeSet? = null) : View(
     private var drawingHeight: Int = 0
     private var drawingAmplitudes: List<Int> = emptyList()
 
-
+    private var isReplaying: Boolean = false
+    private var replayingPosition: Int = 0
 
     private val visualizeRepeatAction: Runnable = object : Runnable {
         override fun run() {
-            Log.d("동현","runrunrunrunrunrunrunrunrunrunrunrunrunrunrunrunrun")
-
-            // Amplitude, Draw
-            val currentAmplitude = onRequestCurrentAmplitude?.invoke() ?: 0
-            drawingAmplitudes = listOf(currentAmplitude) + drawingAmplitudes
+            if(!isReplaying) {
+                val currentAmplitude = onRequestCurrentAmplitude?.invoke() ?: 0
+                drawingAmplitudes = listOf(currentAmplitude) + drawingAmplitudes
+            } else {
+                replayingPosition++
+            }
             invalidate()
 
             handler?.postDelayed(this, ACTION_INTERVAL)
@@ -54,7 +56,15 @@ class SoundVisualizerView(context: Context, attrs: AttributeSet? = null) : View(
         val centerY = drawingHeight / 2f
         var offsetX = drawingwidth.toFloat()
 
-        drawingAmplitudes.forEach { amplitude ->
+        drawingAmplitudes
+            .let { amplitudes ->
+                if(isReplaying) {
+                    amplitudes.takeLast(replayingPosition)
+                } else {
+                    amplitudes
+                }
+            }
+            .forEach { amplitude ->
             val lineLength = amplitude / MAX_AMPLITUDE * drawingHeight * 0.8F
             offsetX -= LINE_SPACE
             if(offsetX < 0) return@forEach
@@ -69,13 +79,19 @@ class SoundVisualizerView(context: Context, attrs: AttributeSet? = null) : View(
         }
     }
 
-    fun startVisualizing() {
+    fun startVisualizing(isReplaying: Boolean) {
+        this.isReplaying = isReplaying
         handler?.post(visualizeRepeatAction)
     }
 
     fun stopVisualizing() {
-        Log.d("동현","스탑")
+        replayingPosition = 0
         handler?.removeCallbacks(visualizeRepeatAction)
+    }
+
+    fun clearVisualization() {
+        drawingAmplitudes = emptyList()
+        invalidate()
     }
 
     companion object {

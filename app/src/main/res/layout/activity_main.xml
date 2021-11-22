@@ -14,13 +14,15 @@
         android:layout_height="match_parent"
         tools:context=".MainActivity">
 
-        <com.example.recorder.customView.SoundVisualizerView
+        <com.example.recorder.customview.SoundVisualizerView
             android:id="@+id/soundVisualizerView"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginBottom="10dp"
             setAmplitude = "@{vm.recorder}"
             showVisible = "@{vm.show}"
+            replayCk = "@{vm.replay}"
+            resetView = "@{vm.reset}"
             app:layout_constraintBottom_toTopOf="@+id/recordTimeTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,16 +42,20 @@
             tools:ignore="HardcodedText" />
 
 
-        <TextView
+        <com.example.recorder.CountUpView
             android:id="@+id/recordTimeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="00:00"
+            resetCount = "@{vm.reset}"
+            android:text="@{vm.countView}"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@+id/recordButton"
             app:layout_constraintEnd_toEndOf="@+id/recordButton"
             app:layout_constraintStart_toStartOf="@+id/recordButton"
-            tools:ignore="HardcodedText" />
+            countUp = "@{vm.countState}"
+            tools:ignore="HardcodedText"
+            tools:text="00:00"/>
 
 
         <com.example.recorder.RecordButton
@@ -57,6 +63,9 @@
             onClickListener="@{vm.onClickListener}"
             setDrawable="@{vm.state}"
             android:layout_width="100dp"
+            android:scaleType="fitCenter"
+            tools:src="@drawable/ic_record"
+            android:padding="25dp"
             android:layout_height="100dp"
             android:layout_marginBottom="50dp"
             app:layout_constraintBottom_toBottomOf="parent"

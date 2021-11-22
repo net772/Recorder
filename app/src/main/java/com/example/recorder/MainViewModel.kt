@@ -7,36 +7,35 @@ import android.util.Log
 import android.view.View
 import androidx.databinding.ObservableField
 import androidx.lifecycle.ViewModel
-import com.example.recorder.Permission.PermissionConstant
-import com.example.recorder.Permission.PermissionListener
-import kotlinx.coroutines.*
+import com.example.recorder.customview.SoundVisualizerView
+import com.example.recorder.permission.PermissionConstant
+import com.example.recorder.permission.PermissionListener
 
 class MainViewModel : ViewModel() {
-    companion object {
-        private const val REQUEST_RECORD_AUDIO_PERMISSION = 201
-    }
 
     private lateinit var mContext: Context
     private lateinit var mNavigator: BaseNavigator
-    private lateinit var mPermissionCk: PermissionCheck
-    val state = ObservableField<State>(State.BEFORE_RECORDING)
+    val state = ObservableField<State>()
     val enable = ObservableField<Boolean>(false)
     val show = ObservableField<Boolean>(false)
+    val replay = ObservableField<Boolean>(false)
+    val countState = ObservableField<Boolean>(false)
+    val reset = ObservableField<Boolean>(false)
+    val countView = ObservableField<String>("00:00")
 
     val recorder = ObservableField<MediaRecorder?>()
 
     private var player: MediaPlayer? = null
     private lateinit var recordingFilePath: String
 
-    fun init(applicationContext: Context, navigator: BaseNavigator, permissionCheck: PermissionCheck) {
+
+    fun init(applicationContext: Context, navigator: BaseNavigator) {
         mContext = applicationContext
         mNavigator = navigator
-        mPermissionCk = permissionCheck
-
-
 
         recordingFilePath = "${mContext.externalCacheDir?.absolutePath}/recording.3gp"
 
+        state.set(State.BEFORE_RECORDING)
     }
 
     private fun requestAudioPermission() {
@@ -44,6 +43,8 @@ class MainViewModel : ViewModel() {
             PermissionConstant.AUDIO_PERMISSIONS,
             object : PermissionListener {
                 override fun onPermissionGranted() {
+                    Log.d("동현","onPermissionGranted")
+
                     recordButton()
                 }
 
@@ -64,9 +65,20 @@ class MainViewModel : ViewModel() {
         }
     }
 
+    private fun changeState(showState: Boolean?, replayState : Boolean?) {
+        show.set(showState)
+
+        replayState?.let {
+            replay.set(replayState)
+        }
+    }
+
     private fun resetButton() {
-        state.set(State.BEFORE_RECORDING)
         setEnable()
+        stopPlaying()
+        reset.set(true)
+
+        state.set(State.BEFORE_RECORDING)
     }
 
     private fun recordButton() {
@@ -84,13 +96,13 @@ class MainViewModel : ViewModel() {
         when(state.get()) {
             State.AFTER_RECORDING, State.ON_PLAYING -> enable.set(true)
             else -> {
-                Log.d("동현","false")
                 enable.set(false)
             }
         }
     }
 
     private fun startRecording() {
+        Log.d("동현","startRecording")
         recorder.set(MediaRecorder().apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
@@ -100,32 +112,47 @@ class MainViewModel : ViewModel() {
         })
 
         recorder.get()?.start()
-        show.set(true)
+        changeState(true, false)
+        countState.set(true)
         state.set(State.ON_RECORDING)
     }
 
     private fun stopRecording() {
+        Log.d("동현","stopRecording")
         recorder.get()?.stop()
-
-        show.set(false)
         recorder.set(null)
+        changeState(false, null)
+        countState.set(false)
         state.set(State.AFTER_RECORDING)
-
         recorder.get()?.release()
     }
 
     private fun startPlaying() {
+        Log.d("동현","startPlaying")
         player = MediaPlayer().apply {
             setDataSource(recordingFilePath)
             prepare()
         }
+
+        player?.setOnCompletionListener {
+            Log.d("동현","setOnCompletionListener")
+            stopPlaying()
+            state.set(State.AFTER_RECORDING)
+        }
+
         player?.start()
+        changeState(true, true)
+
+        countState.set(true)
         state.set(State.ON_PLAYING)
     }
 
     private fun stopPlaying() {
+        Log.d("동현","stopPlaying")
         player?.release()
         player = null
+        changeState(false, null)
+        countState.set(false)
         state.set(State.AFTER_RECORDING)
     }
 
